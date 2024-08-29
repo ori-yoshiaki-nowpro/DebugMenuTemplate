@@ -50,23 +50,8 @@ namespace DebugMenu
             Dir_Right,
         }
 
-        /// <summary>デバッグ画面の実体(シングルトン無効時はnull固定)</summary>
-		public static DebugMenuWindow SingletonInstance { get; private set; }
-        /// <summary>シングルトンか</summary>
-        public static bool IsSingleton { get; set; } = true;
-        public static bool IsInstance
-        {
-            get
-            {
-                return SingletonInstance != null;
-            }
-        }
-
-        /// <summary>生成中のページ一覧 key:ページ識別ID value:ページオブジェクトの実体</summary>
-        private Dictionary<string, DebugPageBase> m_pushPageDic = new Dictionary<string, DebugPageBase>();
-        /// <summary>ページの並び順リスト(ページ識別ID)</summary>
-        private List<string> m_openPageOrderList = new List<string>();
-
+        /// <summary>恒常オブジェクトとして生成するか</summary>
+        [SerializeField] private bool m_isStaticInstance = true;
         /// <summary>指定無しの場合に表示するデフォルトページのプレハブ</summary>
         [SerializeField] private GameObject m_prefabDefaultPage;
         [SerializeField] private Canvas m_canvas;
@@ -74,7 +59,6 @@ namespace DebugMenu
         [SerializeField] private Button m_menuButton;
         [SerializeField] private RectTransform m_menuButtonRect;
         [SerializeField] private Text m_menuButtonText;
-        [SerializeField] private RawImage m_menuBG;
         [SerializeField] private RectTransform m_titleTextRoot;
         /// <summary>メニュータイトルテキスト</summary>
         [SerializeField] private Text m_menuTitleText;
@@ -83,43 +67,31 @@ namespace DebugMenu
         /// <summary>閉じるボタン</summary>
         [SerializeField] private Button m_buttonClose;
         [SerializeField] private RectTransform m_menuRoot;
-        [SerializeField] private RectTransform m_rectScrollBar;
         [SerializeField] private RectTransform m_rootPage;
 
+        /// <summary>生成中のページ一覧 key:ページ識別ID value:ページオブジェクトの実体</summary>
+        private Dictionary<string, DebugPageBase> m_pushPageDic = new Dictionary<string, DebugPageBase>();
+        /// <summary>ページの並び順リスト(ページ識別ID)</summary>
+        private List<string> m_openPageOrderList = new List<string>();
         /// <summary>ページオブジェクトのプレハブのリスト</summary>
         private Dictionary<string,GameObject> m_pagePrefabs = new Dictionary<string, GameObject>();
-        /// <summary>画面表示中か</summary>
         private bool m_isOpenWindow = false;
 
-        /// <summary>最初のページ</summary>
-        public DebugPageBase StartPage
-        {
-            get
-            {
-                if (m_openPageOrderList.Count <= 0) return null;
-                var pageId = m_openPageOrderList[0];
-                if (!m_pushPageDic.TryGetValue(pageId, out var page))
-                {
-                    return null;
-                }
-
-                return page;
-            }
-        }
+        /// <summary>デバッグ画面表示中か</summary>
         public bool IsOpenWindow => m_isOpenWindow;
         
         public void Awake()
         {
-            if (IsSingleton)
+            if (m_isStaticInstance)
             {
                 //既にインスタンスが存在する場合は生成せずに破棄する
-                if (IsInstance)
+                if (ExistStaticInstance)
                 {
                     Destroy(this.gameObject);
                     return;
                 }
                 //インスタンス保持＆DontDestroy設定
-                SingletonInstance = this;
+                StaticInstance = this;
                 DontDestroyOnLoad(this);
             }
             //デフォルト表示のページプレハブを登録
@@ -154,43 +126,92 @@ namespace DebugMenu
             SetMenuButtonPlacement(OpenWindowButtonPlacementType.LeftTop);
         }
 
-        /// <summary>
-        /// ページプレハブ登録
-        /// </summary>
-        /// <param name="prefab"></param>
-        public void AddPagePrefab(GameObject prefab)
+        #region StaticElements
+
+        /// <summary>デバッグメニューの恒常インスタンス</summary>
+        public static DebugMenuWindow StaticInstance { get; private set; }
+        /// <summary>恒常インスタンスが生成されているか</summary>
+        public static bool ExistStaticInstance
         {
-            if (m_pagePrefabs.ContainsKey(prefab.name))
+            get
             {
-                Debug.Log($"{prefab.name}は登録済み");
-                return;
+                return StaticInstance != null;
             }
-            m_pagePrefabs.Add(prefab.name, prefab);
         }
 
         /// <summary>
-        /// 初回表示ページの登録
+        /// 恒常インスタンスの削除
+        /// </summary>
+        public static void ReleaseStaticInstance()
+        {
+            if (ExistStaticInstance)
+            {
+                Destroy(StaticInstance.gameObject);
+                StaticInstance = null;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// デバッグメニュー初期化
         /// </summary>
         /// <typeparam name="TPage"></typeparam>
-        /// <param name="prefabName"></param>
-        /// <param name="isOverwrite"></param>
+        /// <param name="prefabName">生成するページオブジェクトのプレハブ名</param>
+        /// <param name="pageEmptyOnly">初期化処理を生成済みのページが無い場合のみ行うようにするか</param>
         /// <returns></returns>
-        public TPage Initialize<TPage>(string prefabName,bool isOverwrite = false) where TPage : DebugPageBase
+        public TPage Initialize<TPage>(string prefabName,bool pageEmptyOnly = false) where TPage : DebugPageBase
         {
-            //既に最初のページを生成済みの場合は処理しない
-            if(!isOverwrite && StartPage != null)
+            //既にページの追加が行われている場合は処理しない
+            if(!pageEmptyOnly && m_openPageOrderList.Count > 0)
             {
                 return null;
             }
+
             //作成済みのページリストを一旦初期化
             ResetPages();
             //ページ生成
             var addPage = PushPage<TPage>(prefabName);
             return addPage;
         }
+        /// <summary>
+        /// デバッグメニュー初期化
+        /// </summary>
+        /// <typeparam name="TPage"></typeparam>
+        /// <returns></returns>
         public TPage Initialize<TPage>() where TPage : DebugPageBase
         {
             return Initialize<TPage>(m_prefabDefaultPage.name);
+        }
+
+        /// <summary>
+        /// デバッグウィンドウ展開
+        /// </summary>
+        public void OpenWindow()
+        {
+            if (!m_isOpenWindow)
+            {
+                m_isOpenWindow = true;
+                m_titleTextRoot.gameObject.SetActive(true);
+                m_menuButton.gameObject.SetActive(false);
+                m_menuRoot.gameObject.SetActive(true);
+
+                if (m_pushPageDic.Count > 0)
+                {
+                    OpenPage(0);
+                }
+            }
+        }
+        /// <summary>
+        /// デバッグウィンドウ閉じる
+        /// </summary>
+        public void CloseWindow()
+        {
+            m_titleTextRoot.gameObject.SetActive(false);
+            m_menuButton.gameObject.SetActive(true);
+            m_menuRoot.gameObject.SetActive(false);
+            m_isOpenWindow = false;
+            UpdateMenuButton();
         }
 
         /// <summary>
@@ -319,15 +340,29 @@ namespace DebugMenu
         }
 
         /// <summary>
+        /// ページプレハブ登録
+        /// </summary>
+        /// <param name="prefab"></param>
+        public void AddPagePrefab(GameObject prefab)
+        {
+            if (m_pagePrefabs.ContainsKey(prefab.name))
+            {
+                Debug.LogWarning($"[DebugMenuWindow.AddPagePrefab] {prefab.name} is Already registered");
+                return;
+            }
+            m_pagePrefabs.Add(prefab.name, prefab);
+        }
+
+        /// <summary>
         /// ページ追加
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TPage"></typeparam>
         /// <returns></returns>
-        public T PushPage<T>() where T : DebugPageBase
+        public TPage PushPage<TPage>() where TPage : DebugPageBase
         {
-            return PushPage<T>(m_prefabDefaultPage.name);
+            return PushPage<TPage>(m_prefabDefaultPage.name);
         }
-        public T PushPage<T>(string prefabName) where T : DebugPageBase
+        public TPage PushPage<TPage>(string prefabName) where TPage : DebugPageBase
         {
             if (!m_pagePrefabs.ContainsKey(prefabName))
             {
@@ -337,11 +372,11 @@ namespace DebugMenu
             var obj = Instantiate(m_pagePrefabs[prefabName], m_rootPage);
             //ページコンポーネントチェック
             var comp = obj.GetComponent<DebugPageBase>();
-            T target = null;
+            TPage target = null;
             if (comp != null)
             {
                 //既に指定のコンポーネントがついている場合はそのまま返す
-                if (comp is T compT)
+                if (comp is TPage compT)
                 {
                     target = compT;
                 }
@@ -355,7 +390,7 @@ namespace DebugMenu
             else
             {
                 //ページコンポーネントがついてない場合は追加
-                target = obj.AddComponent<T>();
+                target = obj.AddComponent<TPage>();
             }
 
             OnPushedPage(target);
@@ -437,6 +472,7 @@ namespace DebugMenu
         {
             if(!m_pushPageDic.TryGetValue(id,out var page))
             {
+                Debug.LogError($"[DebugMenuWindow.OpenPage]Failed OpenPage PageID:{id}");
                 return;
             }
 
@@ -474,46 +510,6 @@ namespace DebugMenu
                 //戻すページが無い場合はデバッグ画面を閉じる
                 CloseWindow();
             }
-        }
-        /// <summary>
-        /// デバッグ画面表示のアクティブ設定
-        /// </summary>
-        /// <param name="isActive"></param>
-        public static void SetActiveCanvas(bool isActive)
-        {
-            if (!IsInstance || SingletonInstance.m_canvas == null) return;
-            SingletonInstance.m_canvas.enabled = isActive;
-        }
-
-        /// <summary>
-        /// デバッグウィンドウ展開
-        /// </summary>
-        public void OpenWindow()
-        {
-            if (!m_isOpenWindow)
-            {
-                m_isOpenWindow = true;
-                m_titleTextRoot.gameObject.SetActive(true);
-                m_menuButton.gameObject.SetActive(false);
-                m_menuRoot.gameObject.SetActive(true);
-                
-                if (m_pushPageDic.Count > 0)
-                {
-                    OpenPage(0);
-                }
-            }
-        }
-        /// <summary>
-        /// デバッグウィンドウ閉じる
-        /// </summary>
-        public void CloseWindow()
-        {
-            //m_menuBG.gameObject.SetActive(false);
-            m_titleTextRoot.gameObject.SetActive(false);
-            m_menuButton.gameObject.SetActive(true);
-            m_menuRoot.gameObject.SetActive(false);
-            m_isOpenWindow = false;
-            UpdateMenuButton();
         }
 
         /// <summary>

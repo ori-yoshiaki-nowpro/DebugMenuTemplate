@@ -16,7 +16,7 @@ namespace DebugMenu.Test
 
         public void Start()
         {
-            var debugWindow = DebugMenuWindow.SingletonInstance;
+            var debugWindow = DebugMenuWindow.StaticInstance;
             var page = debugWindow.Initialize<DebugMenuTest>();
             page.onSlider = (_value) =>
             {
@@ -26,7 +26,7 @@ namespace DebugMenu.Test
 
         public void Update()
         {
-            var debugWindow = DebugMenuWindow.SingletonInstance;
+            var debugWindow = DebugMenuWindow.StaticInstance;
 
             //ÉLÅ[ì¸óÕ
             if (debugWindow != null)
