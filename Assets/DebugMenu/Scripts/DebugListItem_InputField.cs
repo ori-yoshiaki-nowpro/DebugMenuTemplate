@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace DebugMenu
 {
@@ -18,6 +19,7 @@ namespace DebugMenu
 		protected InputField m_inputField = null;
 
 		protected Action<string> m_onEndEdit;
+		/// <summary>文字入力を終了したか</summary>
 		private bool m_endEdit = false;
 
 		public string Text
@@ -35,41 +37,28 @@ namespace DebugMenu
 
         public void Update()
         {
-			//Debug.Log($"フォーカス:{m_inputField.isFocused}");
-		}
+			//入力終了フラグを戻しておく
+			if (m_endEdit) m_endEdit = false;
+        }
 
-        public void Initialize(string title, string text = null, Action<string> onEndEdit = null, InputField.CharacterValidation validation = InputField.CharacterValidation.Integer)
+        protected override void Initialize(InputFieldData data)
 		{
-			m_textTitle.text = string.Format("{0} : ", title);
-			m_inputField.text = text;
-			m_inputField.onEndEdit.AddListener(OnEndEdit);
-			m_onEndEdit = onEndEdit;
-			m_inputField.characterValidation = validation;
-		}
+			m_onEndEdit = data.onEndEdit;
 
-		protected override void Initialize(InputFieldData data)
-		{
 			m_textTitle.text = string.Format("{0} : ", data.title);
 			m_inputField.text = data.text;
-			m_inputField.onEndEdit.AddListener(OnEndEdit);
-			m_onEndEdit = data.onEndEdit;
 			m_inputField.characterValidation = data.validation;
 
-			m_inputField.onValueChanged.AddListener((_) =>
+			m_inputField.onEndEdit.AddListener(OnEndEdit);
+			m_inputField.onValueChanged.AddListener((_str) =>
 			{
-				Debug.Log($"ValueChanged:{_}");
+				//Debug.Log($"ValueChanged:{_str}");
 			});
-
-			m_inputField.onValidateInput = (_a, _b, _c) =>
+			m_inputField.onValidateInput = (_text, _charIndex, _addedChar) =>
 			{
-				Debug.Log($"ValidateInput: str:{_a} char:{_c}");
-				return _c;
+				//Debug.Log($"ValidateInput: str:{_text} char:{_addedChar}");
+				return _addedChar;
 			};
-
-			m_inputField.onEndEdit.AddListener((_) =>
-			{
-				Debug.Log($"EndEdit:{_}");
-			});
 		}
 
 		public void OpenInputField()
@@ -79,9 +68,15 @@ namespace DebugMenu
 
 		private void OnEndEdit(string value)
 		{
-			//Debug.Log($"onEndEdit: {value}");
 			m_onEndEdit?.Invoke(value);
 			m_endEdit = true;
+			
+			//EventSystem側で文字入力エリアが選択状態になっていると、キー入力操作時に他UIを意図しない形で操作してしまうので解除しておく
+			var sys = EventSystem.current;
+			if (sys != null && sys.currentSelectedGameObject == m_inputField.gameObject)
+			{
+				sys.SetSelectedGameObject(null);
+			}
 		}
 
 		/// <summary>
@@ -148,7 +143,9 @@ namespace DebugMenu
             switch (inputType)
             {
 				case DebugMenuWindow.KeystrokeInfoType.Enter:
-                    if (!m_inputField.isFocused && !m_endEdit)
+                    if (!m_inputField.isFocused 
+						&& !m_endEdit//入力終了直後は反応させないようにする
+						)
                     {
 						OnInputField();
 						return true;
