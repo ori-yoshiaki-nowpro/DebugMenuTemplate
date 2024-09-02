@@ -61,9 +61,9 @@ namespace DebugMenu
         {
             SliderData data = new SliderData()
             {
-                title = title,
-                min = min,
-                max = max,
+                titleText = title,
+                minValue = min,
+                maxValue = max,
                 value = value,
                 wholeNumber = wholeNumber,
                 didChangeValue = changeValue,

@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_imageBg: {fileID: 114453282491929134}
-  m_slider: {fileID: 2013121758477371359}
+  m_slider: {fileID: 6113636733756833750}
   m_textTitle: {fileID: 8684703825700894482}
   m_textValue: {fileID: 6965061632051064721}
 --- !u!1 &972894616525569751
@@ -302,8 +302,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.67700005, y: 0.5}
   m_AnchorMax: {x: 0.919, y: 1}
-  m_AnchoredPosition: {x: -0.14259338, y: 1}
-  m_SizeDelta: {x: 0.29519653, y: -2}
+  m_AnchoredPosition: {x: 0.0022583008, y: 1}
+  m_SizeDelta: {x: 0.0044861, y: -2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7383014032801293217
 CanvasRenderer:
@@ -349,7 +349,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2666189563457072370}
-  - component: {fileID: 2013121758477371359}
+  - component: {fileID: 6113636733756833750}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -379,7 +379,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0.000015258789, y: 0.99997}
   m_SizeDelta: {x: 0, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2013121758477371359
+--- !u!114 &6113636733756833750
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2756931673808989287}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: d8e23624e48197f4a82e4ea31944605f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -694,8 +694,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.08078572, y: 0.5}
   m_AnchorMax: {x: 0.32242855, y: 1}
-  m_AnchoredPosition: {x: -0.22644043, y: 0.9999981}
-  m_SizeDelta: {x: -0.45291138, y: -2}
+  m_AnchoredPosition: {x: 95.55398, y: 0.9999981}
+  m_SizeDelta: {x: 191.1079, y: -2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5644069495381784131
 CanvasRenderer:

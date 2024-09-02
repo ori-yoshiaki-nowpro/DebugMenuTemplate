@@ -4,19 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DebugMenu
 {
     public class DebugListItem_Slider : DebugListItemBase<SliderData>
     {
-        /// <summary></summary>
-        private readonly float ratePercent = 10f;
+        /// <summary>キー操作でスライダーの値を変更する際の変動幅(百分率)</summary>
+        protected readonly float VariationRatePercent = 10f;
 
         [SerializeField]
         protected Image m_imageBg;
         [SerializeField]
-        protected Slider m_slider;
+        protected DebugCustomSlider m_slider;
         [SerializeField]
         private Text m_textTitle;
         [SerializeField]
@@ -36,11 +37,11 @@ namespace DebugMenu
         {
             m_didChangeValue = data.didChangeValue;
 
-            m_textTitle.text = data.title;
+            m_textTitle.text = data.titleText;
 
             m_slider.wholeNumbers = data.wholeNumber;
-            m_slider.minValue = data.min;
-            m_slider.maxValue = data.max;
+            m_slider.minValue = data.minValue;
+            m_slider.maxValue = data.maxValue;
             m_slider.value = data.value;
             m_slider.onValueChanged.AddListener((_value) =>
             {
@@ -58,10 +59,10 @@ namespace DebugMenu
                 case DebugMenuWindow.KeystrokeInfoType.Enter:                    
                     //return true;
                 case DebugMenuWindow.KeystrokeInfoType.Dir_Left:
-                    KeyinputVal(false);
+                    UpdateSliderValue(false);
                     return true;
                 case DebugMenuWindow.KeystrokeInfoType.Dir_Right:
-                    KeyinputVal(true);
+                    UpdateSliderValue(true);
                     return true;
             }
 
@@ -69,14 +70,14 @@ namespace DebugMenu
         }
 
         /// <summary>
-        /// キー入力によるスライダー操作
+        /// スライダーの現在値の更新
         /// </summary>
-        /// <param name="isUp"></param>
-        private void KeyinputVal(bool isUp)
+        /// <param name="isValueUp"></param>
+        private void UpdateSliderValue(bool isValueUp)
         {
             float diff = m_slider.maxValue - m_slider.minValue;
-            float val = diff * ratePercent * 0.01f;
-            if (!isUp) val = -val;
+            float val = diff * VariationRatePercent * 0.01f;
+            if (!isValueUp) val = -val;
             m_slider.value += val;
         }
         
@@ -88,16 +89,20 @@ namespace DebugMenu
         {
             m_textValue.text = $"{value}";
         }
-
     }
 
     public sealed class SliderData : ListItemDataBase
     {
-        public string title;
-        public float min;
-        public float max;
+        public string titleText;
+        /// <summary>スライダーの最低値</summary>
+        public float minValue;
+        /// <summary>スライダーの最大値</summary>
+        public float maxValue;
+        /// <summary>スライダーの初期値</summary>
         public float value;
+        /// <summary>整数値限定か</summary>
         public bool wholeNumber;
+        /// <summary>スライダーの値変更時のコールバック</summary>
         public Action<float> didChangeValue;
     }
 }
