@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace DebugMenu
 {
+    /// <summary>
+    /// デフォルト設定時に読み込む各メニュー項目のプレハブ名の定義
+    /// </summary>
     public static class DefaultListItemAssetKeys
     {
         public static readonly string ButtonListItem = "DebugListItemButton";

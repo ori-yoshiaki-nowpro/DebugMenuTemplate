@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 namespace DebugMenu
 {
+    /// <summary>
+    /// デバッグメニュー画面
+    /// </summary>
     public partial class DebugMenuWindow : MonoBehaviour
     {
         /// <summary>

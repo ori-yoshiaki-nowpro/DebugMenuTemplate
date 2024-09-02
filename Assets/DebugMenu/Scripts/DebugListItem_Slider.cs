@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace DebugMenu
 {
+    /// <summary>
+    /// デバッグメニュー項目：スライダー
+    /// </summary>
     public class DebugListItem_Slider : DebugListItemBase<SliderData>
     {
         /// <summary>キー操作でスライダーの値を変更する際の変動幅(百分率)</summary>

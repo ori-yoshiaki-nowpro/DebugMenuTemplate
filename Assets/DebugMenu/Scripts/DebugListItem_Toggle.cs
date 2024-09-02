@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace DebugMenu
 {
     /// <summary>
-    /// トグルメニュー
+    /// デバッグメニュー項目：トグル
     /// </summary>
     public class DebugListItem_Toggle : DebugListItemBase<ToggleData>
     {

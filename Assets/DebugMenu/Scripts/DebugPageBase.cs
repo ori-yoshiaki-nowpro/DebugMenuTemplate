@@ -9,6 +9,9 @@ using UnityEngine.Pool;
 
 namespace DebugMenu
 {
+    /// <summary>
+    /// デバッグメニューページのベースクラス
+    /// </summary>
     public abstract class DebugPageBase : MonoBehaviour
     {
         /// <summary>
@@ -17,10 +20,10 @@ namespace DebugMenu
         public sealed class ListItemInfo
         {
             public readonly GameObject listItemObj;
-            public readonly IListEvent listItemEvent;
+            public readonly IListItemEvent listItemEvent;
             public readonly ListItemDataBase data;
 
-            public ListItemInfo(GameObject obj,IListEvent listEvent,ListItemDataBase setData)
+            public ListItemInfo(GameObject obj,IListItemEvent listEvent,ListItemDataBase setData)
             {
                 listItemObj = obj;
                 listItemEvent = listEvent;
@@ -172,7 +175,7 @@ namespace DebugMenu
                 return -1;
             }
 
-            var comp = obj.GetComponent<IListEvent>();
+            var comp = obj.GetComponent<IListItemEvent>();
             if(comp == null)
             {
                 //IListEvent見つからず

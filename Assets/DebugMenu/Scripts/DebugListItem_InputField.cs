@@ -9,6 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace DebugMenu
 {
+	/// <summary>
+	/// デバッグメニュー項目：文字入力
+	/// </summary>
     public class DebugListItem_InputField : DebugListItemBase<InputFieldData>
     {
 		[SerializeField]
@@ -113,7 +116,7 @@ namespace DebugMenu
 #elif UNITY_STANDALONE || UNITY_EDITOR
 #if NP_STEAM
 
-#if false//CUBEの処理のコピペ(独自処理のため封印)
+#if false//別プロジェクト処理のコピペ(独自処理のため封印)
 			if (SteamManager.Initialized) 
 			{
 				if (AppCore.AppCoreManager.LanguageType == Define.ELanguage.English) {

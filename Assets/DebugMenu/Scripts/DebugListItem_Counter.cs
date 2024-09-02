@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace DebugMenu
 {
+	/// <summary>
+	/// デバッグメニュー項目：カウンター
+	/// </summary>
     public class DebugListItem_Counter : DebugListItemBase<CounterData>
     {
 		private const string c_TitleFormat = "{0} : {1}";

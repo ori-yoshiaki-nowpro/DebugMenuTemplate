@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 namespace DebugMenu
 {
     /// <summary>
-    /// ドロップダウンメニュー
+    /// デバッグメニュー項目：ドロップダウン
     /// </summary>
     public class DebugListItem_DropDown : DebugListItemBase<DropDownData>
     {
@@ -39,7 +39,8 @@ namespace DebugMenu
             {
                 m_didSelect?.Invoke(_index);
             });
-            dropdown.onClose = () =>
+
+            dropdown.RegistCloseDropDownListAction(() =>
             {
                 //EventSystem側でドロップダウンが選択状態になっていると、キー入力操作時に他UIを意図しない形で操作してしまうので解除しておく
                 var sys = EventSystem.current;
@@ -47,7 +48,7 @@ namespace DebugMenu
                 {
                     sys.SetSelectedGameObject(null);
                 }
-            };
+            });
         }
 
         protected override bool UpdateInputKey(DebugMenuWindow.KeystrokeInfoType inputType)
@@ -84,14 +85,14 @@ namespace DebugMenu
                 case DebugMenuWindow.KeystrokeInfoType.Dir_Down:
                     if (m_dropDown.IsOpenList)
                     {
-                        m_dropDown.UpdateSelectCursor(true);
+                        m_dropDown.UpdateSelectListItemIndex(true);
                         return true;
                     }
                     break;
                 case DebugMenuWindow.KeystrokeInfoType.Dir_Up:
                     if (m_dropDown.IsOpenList)
                     {
-                        m_dropDown.UpdateSelectCursor(false);
+                        m_dropDown.UpdateSelectListItemIndex(false);
                         return true;
                     }
                     break;

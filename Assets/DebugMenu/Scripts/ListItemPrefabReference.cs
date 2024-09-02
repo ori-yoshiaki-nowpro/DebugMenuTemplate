@@ -10,7 +10,7 @@ namespace DebugMenu
     public class ListItemPrefabReference : MonoBehaviour
     {
         [SerializeField] private List<GameObject> m_prefabs = new List<GameObject>();
-
+        /// <summary>プレハブ名をkeyとしたメニュープレハブのリスト</summary>
         private Dictionary<string, GameObject> m_dicNameToPrefab = new Dictionary<string, GameObject>();
 
         private bool m_bInitPrefabDic = false;
@@ -24,6 +24,7 @@ namespace DebugMenu
         {
             if (!m_bInitPrefabDic)
             {
+                //参照設定されているプレハブをDictionaryの方に登録
                 foreach(var prefab in m_prefabs)
                 {
                     AddPrefab(prefab);
@@ -33,6 +34,10 @@ namespace DebugMenu
             }
         }
 
+        /// <summary>
+        /// プレハブの登録
+        /// </summary>
+        /// <param name="prefab"></param>
         public void AddPrefab(GameObject prefab)
         {
             if (!m_dicNameToPrefab.ContainsKey(prefab.name))
@@ -41,6 +46,11 @@ namespace DebugMenu
             }
         }
 
+        /// <summary>
+        /// メニュープレハブの取得
+        /// </summary>
+        /// <param name="prefabName"></param>
+        /// <returns></returns>
         public GameObject GetPrefab(string prefabName)
         {
             InitPrefabDictionary();

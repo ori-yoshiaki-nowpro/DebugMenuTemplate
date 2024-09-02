@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace DebugMenu
 {
     /// <summary>
-    /// ボタンメニュー
+    /// デバッグメニュー項目：ボタン
     /// </summary>
     public class DebugListItem_Button : DebugListItemBase<ButtonData>
     {

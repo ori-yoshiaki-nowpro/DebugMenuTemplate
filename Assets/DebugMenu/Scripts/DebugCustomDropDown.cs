@@ -10,34 +10,45 @@ namespace DebugMenu
 {
     public class DebugCustomDropDown : Dropdown
     {
+        /// <summary>
+        /// ドロップダウンアイテム
+        /// </summary>
         protected class CustomDropdownItem : DropdownItem
         {
-            private Color m_color;
+            /// <summary>表示カラー</summary>
+            private Color m_initColor;
+            /// <summary></summary>
+            private  UnityAction<CustomDropdownItem> m_onPointerEnterAction;
 
-            public Action<CustomDropdownItem> onPointer;
-
-            public void Init()
+            public void Initialize(UnityAction<CustomDropdownItem> onPointerEnter = null)
             {
+                m_onPointerEnterAction = onPointerEnter;
+
                 if (image != null)
                 {
-                    m_color = image.color;
+                    m_initColor = image.color;
                 }
             }
 
-            public void Set(bool isSet)
+            /// <summary>
+            /// 表示更新
+            /// </summary>
+            /// <param name="isSelect">選択状態にするか</param>
+            public void UpdateView(bool isSelect)
             {
                 if(image != null)
                 {
-                    image.enabled = isSet;
+                    image.enabled = isSelect;
+                    //フラグに応じて表示色を変える
                     var setColor = image.color;
-                    if (isSet)
+                    if (isSelect)
                     {
                         setColor = Color.yellow;
-                        setColor.a = m_color.a;
+                        setColor.a = m_initColor.a;
                     }
                     else
                     {
-                        setColor = m_color;
+                        setColor = m_initColor;
                     }
                     image.color = setColor;
                 }
@@ -46,35 +57,26 @@ namespace DebugMenu
             public override void OnPointerEnter(PointerEventData eventData)
             {
                 base.OnPointerEnter(eventData);
-                onPointer?.Invoke(this);
-            }
-
-            public override void OnCancel(BaseEventData eventData)
-            {
-                base.OnCancel(eventData);
+                m_onPointerEnterAction?.Invoke(this);
             }
         }
 
-        private UnityEvent m_eventCreateDropDownList = new UnityEvent();
-        private UnityEvent m_eventDeleteDropDownList = new UnityEvent();
-
+        /// <summary>ドロップダウンリスト表示時のコールバックイベント</summary>
+        private UnityEvent m_openDropDownListEvent = new UnityEvent();
+        /// <summary>ドロップダウンリストを閉じた際のコールバックイベント</summary>
+        private UnityEvent m_closeDropDownListEvent = new UnityEvent();
+        /// <summary>表示しているドロップダウンリスト内のアイテム</summary>
         private List<CustomDropdownItem> m_itemList = new List<CustomDropdownItem>();
-
         private CanvasGroup m_canvasGroupItemList;
-
-        private int m_selectCursorIndex = 0;
-
-        private float m_prevAlpha = 0;
-
-        public Action onOpen = null;
-        public Action onClose = null;
-
+        /// <summary>選択中のドロップダウンアイテムの番号</summary>
+        private int m_selectListItemIndex = 0;
+       
         /// <summary>ドロップダウンリストを表示しているか</summary>
         public bool IsOpenList { get; private set; } = false;
         /// <summary>ドロップダウンリストの項目数</summary>
         public int ItemCount => m_itemList.Count;
-        /// <summary>カーソル選択中の項目番号</summary>
-        public int SelectIndex => m_selectCursorIndex;
+        /// <summary>選択中のドロップダウンアイテムの番号</summary>
+        public int SelectIndex => m_selectListItemIndex;
         /// <summary>表示・非表示時のフェード中か</summary>
         public bool IsPlayingFadeAnimation
         {
@@ -86,26 +88,6 @@ namespace DebugMenu
                            m_canvasGroupItemList.alpha < 1;
                 }
                 return false;
-            }
-        }
-
-        public void Update()
-        {
-            if(m_canvasGroupItemList != null)
-            {
-                var alpha = m_canvasGroupItemList.alpha;
-                if (m_prevAlpha != 0 && m_prevAlpha != 1)
-                {
-                    if(alpha == 0)
-                    {
-                        onClose?.Invoke();
-                    }
-                    else if(alpha == 1)
-                    {
-                        onOpen?.Invoke();
-                    }
-                }
-                m_prevAlpha = alpha;
             }
         }
 
@@ -132,7 +114,7 @@ namespace DebugMenu
         {
             base.DestroyDropdownList(dropdownList);
             IsOpenList = false;
-            m_eventDeleteDropDownList?.Invoke();
+            m_closeDropDownListEvent?.Invoke();
             m_itemList.Clear();
         }
         /// <summary>
@@ -156,12 +138,10 @@ namespace DebugMenu
             cItem.image = image;
             cItem.toggle = toggle;
             cItem.rectTransform = rect;
-            cItem.Init();
-
-            cItem.onPointer = (_) =>
+            cItem.Initialize((_) =>
             {
-                UpdateSelectCursor(_);
-            };
+                UpdateSelectListItemIndex(_);
+            });
 
             m_itemList.Add(cItem);
 
@@ -173,7 +153,7 @@ namespace DebugMenu
             var blocker = base.CreateBlocker(rootCanvas);
 
             IsOpenList = true;//表示処理(Show)の最後に呼び出されるので、ここで表示フラグをオンにしておく
-            m_eventCreateDropDownList?.Invoke();
+            m_openDropDownListEvent?.Invoke();
 
             InitializeSelect();
 
@@ -186,7 +166,7 @@ namespace DebugMenu
         /// <param name="action"></param>
         public void RegistOpenDropDownListAction(UnityAction action)
         {
-            m_eventCreateDropDownList.AddListener(action);
+            m_openDropDownListEvent.AddListener(action);
         }
 
         /// <summary>
@@ -195,7 +175,7 @@ namespace DebugMenu
         /// <param name="action"></param>
         public void UnRegistOpenDropDownListAction(UnityAction action)
         {
-            m_eventCreateDropDownList.RemoveListener(action);
+            m_openDropDownListEvent.RemoveListener(action);
         }
 
         /// <summary>
@@ -204,7 +184,7 @@ namespace DebugMenu
         /// <param name="action"></param>
         public void RegistCloseDropDownListAction(UnityAction action)
         {
-            m_eventDeleteDropDownList.AddListener(action);
+            m_closeDropDownListEvent.AddListener(action);
         }
 
         /// <summary>
@@ -213,7 +193,7 @@ namespace DebugMenu
         /// <param name="action"></param>
         public void UnRegistCloseDropDownListAction(UnityAction action)
         {
-            m_eventDeleteDropDownList.RemoveListener(action);
+            m_closeDropDownListEvent.RemoveListener(action);
         }
 
         /// <summary>
@@ -227,23 +207,23 @@ namespace DebugMenu
                 var item = m_itemList[i];
                 if(item != null && item.toggle != null && item.toggle.isOn)
                 {
-                    m_selectCursorIndex = i;
-                    item.Set(true);
+                    m_selectListItemIndex = i;
+                    item.UpdateView(true);
                     break;
                 }
             }
         }
 
         /// <summary>
-        /// カーソル位置更新
+        /// 選択中ドロップダウンアイテム番号の更新
         /// </summary>
         /// <param name="isNext"></param>
-        public void UpdateSelectCursor(bool isNext)
+        public void UpdateSelectListItemIndex(bool isNext)
         {
-            int index = m_selectCursorIndex;
+            int index = m_selectListItemIndex;
             if (isNext)
             {
-                index = m_selectCursorIndex + 1;
+                index = m_selectListItemIndex + 1;
                 if (index >= m_itemList.Count)
                 {
                     index = 0;
@@ -251,31 +231,31 @@ namespace DebugMenu
             }
             else
             {
-                index = m_selectCursorIndex - 1;
+                index = m_selectListItemIndex - 1;
                 if (index < 0)
                 {
                     index = m_itemList.Count - 1;
                 }
             }
-            UpdateSelectCursor(index);
+            UpdateSelectListItemIndex(index);
         }
-        protected void UpdateSelectCursor(CustomDropdownItem item)
+        protected void UpdateSelectListItemIndex(CustomDropdownItem item)
         {
             int index = m_itemList.FindIndex(_ => _ == item);
             if (index == -1) return;
 
-            UpdateSelectCursor(index);
+            UpdateSelectListItemIndex(index);
         }
-        private void UpdateSelectCursor(int index)
+        private void UpdateSelectListItemIndex(int index)
         {
             //前回の選択項目を非選択に
-            if (m_selectCursorIndex != -1)
+            if (m_selectListItemIndex != -1)
             {
-                m_itemList[m_selectCursorIndex].Set(false);
+                m_itemList[m_selectListItemIndex].UpdateView(false);
             }
             //今回選択した項目を選択状態に
             var selectItem = m_itemList[index];
-            selectItem.Set(true);
+            selectItem.UpdateView(true);
 
             //InputManager登録のキーで操作された場合に、選択中の項目が正しく更新されない場合があるので手動で更新しておく
             var sys = EventSystem.current;
@@ -284,7 +264,7 @@ namespace DebugMenu
                 sys.SetSelectedGameObject(selectItem.gameObject);   
             }
 
-            m_selectCursorIndex = index;
+            m_selectListItemIndex = index;
         }
     }
 }

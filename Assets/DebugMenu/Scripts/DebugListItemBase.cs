@@ -18,7 +18,10 @@ namespace DebugMenu
         public Action<GameObject> onEnterPointer;
     }
 
-    public interface IListEvent
+    /// <summary>
+    /// デバッグメニュー項目のインターフェイス
+    /// </summary>
+    public interface IListItemEvent
     {
         /// <summary>
         /// 初期化
@@ -41,7 +44,11 @@ namespace DebugMenu
         public bool OnInputKey(DebugMenuWindow.KeystrokeInfoType info);
     }
 
-    public abstract class DebugListItemBase<TData> : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IListEvent where TData :ListItemDataBase
+    /// <summary>
+    /// デバッグメニュー項目のベースクラス
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    public abstract class DebugListItemBase<TData> : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IListItemEvent where TData : ListItemDataBase
     {
         /// <summary>選択状態時の表示カラーのデフォルト値</summary>
         protected readonly Color DefaultSelectedColor = Color.yellow;
@@ -62,8 +69,9 @@ namespace DebugMenu
         protected Color m_initColor;
         /// <summary>背景オブジェクト(選択状態切り替わり時に表示カラーの変更対象となるオブジェクト)</summary>
         protected virtual Graphic GraphBg { get; } = null;
-
+        /// <summary>メニュー上にマウスポインタが乗っかった際のコールバック</summary>
         private Action<GameObject> m_onPointerEnterAct = null;
+        /// <summary>このメニュー項目が属しているページ</summary>
         protected DebugPageBase m_pageOwner;
 
         public virtual void Awake()
@@ -89,11 +97,17 @@ namespace DebugMenu
             }
         }
 
+        /// <summary>
+        /// 選択状態に変更した際の処理
+        /// </summary>
         public virtual void OnSelect()
         {
             SetColorBackGround(true);
         }
 
+        /// <summary>
+        /// 非選択状態に変更した際の処理
+        /// </summary>
         public virtual void OnDeselect()
         {
             SetColorBackGround(false);
