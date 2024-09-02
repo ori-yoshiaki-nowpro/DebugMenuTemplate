@@ -46,29 +46,29 @@ namespace DebugMenu.Test
                 {
                     if (Input.GetKeyDown(KeyCode.Z))
                     {
-                        debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Enter);
+                        debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Enter);
                     }
                     else if (Input.GetKeyDown(KeyCode.X))
                     {
-                        debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Cancel);
+                        debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Cancel);
                     }
                     else
                     {
                         if (Input.GetKeyDown(KeyCode.W))
                         {
-                            debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Up);
+                            debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Up);
                         }
                         else if (Input.GetKeyDown(KeyCode.S))
                         {
-                            debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Down);
+                            debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Down);
                         }
                         else if (Input.GetKeyDown(KeyCode.A))
                         {
-                            debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Left);
+                            debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Left);
                         }
                         else if (Input.GetKeyDown(KeyCode.D))
                         {
-                            debugWindow.SendKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Right);
+                            debugWindow.ReceiveKeystrokeInfo(DebugMenuWindow.KeystrokeInfoType.Dir_Right);
                         }
                     }
                 }

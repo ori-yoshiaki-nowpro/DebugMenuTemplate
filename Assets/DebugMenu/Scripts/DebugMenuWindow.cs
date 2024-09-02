@@ -513,24 +513,27 @@ namespace DebugMenu
         }
 
         /// <summary>
-        /// デバッグ画面側にキー入力の情報を送信
+        /// デバッグ画面側にキー入力情報を反映
         /// </summary>
         /// <param name="info"></param>
-        public void SendKeystrokeInfo(KeystrokeInfoType info)
+        public void ReceiveKeystrokeInfo(KeystrokeInfoType info)
         {
-            //
+            //画面表示してないときは入力を受け付けない
+            if (!IsOpenWindow) return;
+
+            //選択中の項目に対してキー入力を反映
             bool isInput = false;
             var pageId = m_openPageOrderList[m_openPageOrderList.Count - 1];
             if (m_pushPageDic.TryGetValue(pageId, out var page))
             {
                 isInput = page.OnInputKeyStroke(info);
             }
-            //
+            //選択中項目側に反映されなかった場合は、デバッグ画面側の反映チェック
             if (!isInput)
             {
                 if (info == KeystrokeInfoType.Cancel)
                 {
-                    //ページバック
+                    //1ページ戻す
                     OnPressBackMenuButton();
                 }
             }
