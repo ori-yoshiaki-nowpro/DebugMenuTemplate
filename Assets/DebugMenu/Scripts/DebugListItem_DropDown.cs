@@ -17,7 +17,7 @@ namespace DebugMenu
     {
         protected Action<int> m_didSelect;
         [SerializeField]
-        protected CustomDropDown m_dropDown;
+        protected DebugCustomDropDown m_dropDown;
 
         protected override Graphic GraphBg
         {

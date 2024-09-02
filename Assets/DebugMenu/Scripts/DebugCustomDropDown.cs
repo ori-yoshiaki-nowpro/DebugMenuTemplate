@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace DebugMenu
 {
-    public class CustomDropDown : Dropdown
+    public class DebugCustomDropDown : Dropdown
     {
         protected class CustomDropdownItem : DropdownItem
         {
