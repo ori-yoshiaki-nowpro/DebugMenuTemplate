@@ -99,7 +99,7 @@ namespace DebugMenu
             }
             //デフォルト表示のページプレハブを登録
             AddPagePrefab(m_prefabDefaultPage);
-            //各種ボタン初期化
+            //各種ボタン初期化・表示設定
             m_menuButton.onClick.RemoveAllListeners();
             m_menuButton.onClick.AddListener(()=> 
             {
@@ -122,10 +122,9 @@ namespace DebugMenu
             {
                 OnPressBackMenuButton();
             });
-            //
             m_titleTextRoot.gameObject.SetActive(false);
             m_menuRoot.gameObject.SetActive(false);
-            //
+            //ボタン表示位置設定
             SetMenuButtonPlacement(OpenWindowButtonPlacementType.LeftTop);
         }
 

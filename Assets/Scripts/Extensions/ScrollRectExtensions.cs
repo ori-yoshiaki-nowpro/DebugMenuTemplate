@@ -318,10 +318,10 @@ public static class ScrollRectExtensions
     }
 
     /// <summary>
-    /// 
+    /// 縦方向スクロールビュー時の指定子要素の表示座標の算出
     /// </summary>
     /// <param name="layout"></param>
-    /// <param name="contentSize"></param>
+    /// <param name="contentSizeRect"></param>
     /// <param name="selectIdx"></param>
     /// <param name="isBottom"></param>
     /// <returns></returns>
@@ -383,14 +383,6 @@ public static class ScrollRectExtensions
         }
         return ret;
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="layout"></param>
-    /// <param name="contentRectList"></param>
-    /// <param name="selectIdx"></param>
-    /// <param name="isBottom"></param>
-    /// <returns></returns>
     private static double CalculateScrollPositionHeight(LayoutGroup layout, List<RectTransform> contentRectList, int selectIdx, bool isBottom = false)
     {
         //空白サイズ取得
@@ -427,8 +419,9 @@ public static class ScrollRectExtensions
         }
         return ret;
     }
+
     /// <summary>
-    /// 
+    /// 横方向スクロールビュー時の指定子要素の表示座標の算出
     /// </summary>
     /// <param name="layout"></param>
     /// <param name="contentSizeRect"></param>
@@ -499,14 +492,6 @@ public static class ScrollRectExtensions
         }
         return ret;
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="layout"></param>
-    /// <param name="contentRectList"></param>
-    /// <param name="selectIdx"></param>
-    /// <param name="isBottom"></param>
-    /// <returns></returns>
     private static double CalculateScrollPositionWidth(LayoutGroup layout, List<RectTransform> contentRectList, int selectIdx, bool isBottom = false)
     {
         //空白サイズ取得
