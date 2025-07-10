@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace DebugMenu
 {
@@ -12,7 +13,7 @@ namespace DebugMenu
     /// </summary>
     public abstract class DefaultDebugPage : DebugPageBase
     {
-        public void AddButton(string text, Action didTap = null)
+        public void AddButton(string text, UnityAction didTap = null)
         {
             ButtonData data = new ButtonData()
             {
@@ -71,20 +72,18 @@ namespace DebugMenu
             AddListItem(DefaultListItemAssetKeys.SliderListItem, data);
         }
 
-        public void AddCounter(string text, float rate, Func<float> didTapRight, Func<float> didTapLeft, Action<float> afterDidTap = null, Action<float> didTapCenter = null)
+        public void AddCounter(string text, float rate, UnityAction<float> afterDidTap = null, UnityAction<float> didTapCenter = null)
         {
             CounterData data = new CounterData()
             {
                 text = text,
                 initValue = rate,
-                didTapRight = didTapRight,
                 didTapCenter = didTapCenter,
-                didTapLeft = didTapLeft,
                 afterDidTap = afterDidTap,
             };
             AddListItem(DefaultListItemAssetKeys.CounterListItem, data);
         }
-        public void AddCounter(string text,float value,float min,float max,float fluctuationValue,Action<float> afterTap,Action<float> didTapCenter)
+        public void AddCounter(string text, float value, float min, float max, float fluctuationValue, UnityAction<float> afterTap, UnityAction<float> didTapCenter)
         {
             CounterData data = new CounterData()
             {

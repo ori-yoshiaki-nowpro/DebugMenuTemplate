@@ -62,14 +62,14 @@ namespace DebugMenu
         }
 
         /// <summary>ドロップダウンリスト表示時のコールバックイベント</summary>
-        private UnityEvent m_openDropDownListEvent = new UnityEvent();
+        protected UnityEvent m_openDropDownListEvent = new UnityEvent();
         /// <summary>ドロップダウンリストを閉じた際のコールバックイベント</summary>
-        private UnityEvent m_closeDropDownListEvent = new UnityEvent();
+        protected UnityEvent m_closeDropDownListEvent = new UnityEvent();
         /// <summary>表示しているドロップダウンリスト内のアイテム</summary>
-        private List<CustomDropdownItem> m_itemList = new List<CustomDropdownItem>();
-        private CanvasGroup m_canvasGroupItemList;
+        protected List<CustomDropdownItem> m_itemList = new List<CustomDropdownItem>();
+        protected CanvasGroup m_canvasGroupItemList;
         /// <summary>選択中のドロップダウンアイテムの番号</summary>
-        private int m_selectListItemIndex = 0;
+        protected int m_selectListItemIndex = 0;
        
         /// <summary>ドロップダウンリストを表示しているか</summary>
         public bool IsOpenList { get; private set; } = false;
@@ -147,7 +147,6 @@ namespace DebugMenu
 
             return item;
         }
-
         protected override GameObject CreateBlocker(Canvas rootCanvas)
         {
             var blocker = base.CreateBlocker(rootCanvas);

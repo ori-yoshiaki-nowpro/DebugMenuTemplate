@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace DebugMenu
@@ -23,23 +24,27 @@ namespace DebugMenu
                 return m_button.targetGraphic;
             }
         }
+        /// <summary>ボタン押下時のコールバック</summary>
+        protected UnityAction m_onClickAction;
 
-        private Action m_didTap;
-
-        public void Initialize(string text, Action didTap)
+        public void Initialize(string text, UnityAction didTap)
         {
             SetText(text);
 
-            m_didTap = didTap;
+            m_onClickAction = didTap;
             if(m_button != null)
             {
                 m_button.onClick.AddListener(()=> 
                 {
-                    m_didTap?.Invoke();
+                    m_onClickAction?.Invoke();
                 }); 
             }
         }
 
+        /// <summary>
+        /// 表示テキストの設定
+        /// </summary>
+        /// <param name="text"></param>
         public void SetText(string text)
         {
             if(m_text != null)
@@ -64,12 +69,12 @@ namespace DebugMenu
         {
             SetText(data.text);
 
-            m_didTap = data.didTap;
+            m_onClickAction = data.didTap;
             if (m_button != null)
             {
                 m_button.onClick.AddListener(() =>
                 {
-                    m_didTap?.Invoke();
+                    m_onClickAction?.Invoke();
                 });
             }
         }
@@ -78,6 +83,6 @@ namespace DebugMenu
     public sealed class ButtonData : ListItemDataBase
     {
         public string text;
-        public Action didTap;
+        public UnityAction didTap;
     }
 }

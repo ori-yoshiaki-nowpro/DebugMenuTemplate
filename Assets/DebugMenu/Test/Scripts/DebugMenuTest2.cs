@@ -18,6 +18,7 @@ namespace DebugMenu.Test
             {
                 AddButton($"ボタン{i + 1}", () =>
                 {
+                    UnityEngine.Debug.Log($"ボタン{i}が押された");
                 });
             }
         }

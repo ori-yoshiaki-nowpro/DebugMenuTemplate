@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace DebugMenu
 {
@@ -23,10 +24,8 @@ namespace DebugMenu
 		private string m_title = "";
 		private float m_value = 0.0f;
 
-		private Func<float> m_didTapR;
-		private Func<float> m_didTapL;
 		/// <summary>値変更時のコールバック</summary>
-		private Action<float> m_didAfterTap;
+		private UnityAction<float> m_didAfterTap;
 		/// <summary>変動値</summary>
 		private float m_changeValue;
 		/// <summary>最小値</summary>
@@ -44,8 +43,6 @@ namespace DebugMenu
 
 		protected override void Initialize(CounterData data)
 		{
-			m_didTapR = data.didTapRight;
-			m_didTapL = data.didTapLeft;
 			m_didAfterTap = data.afterDidTap;
 			m_title = data.text;
 			m_value = data.initValue;
@@ -157,10 +154,9 @@ namespace DebugMenu
 		public float changeValue;
 		/// <summary>中央ボタン押下時に値を初期値に戻すか</summary>
 		public bool isResetValueByCenterBtn;
-
-		public Func<float> didTapRight;
-		public Func<float> didTapLeft;
-		public Action<float> afterDidTap;
-		public Action<float> didTapCenter;
+		/// <summary></summary>
+		public UnityAction<float> afterDidTap;
+		/// <summary></summary>
+		public UnityAction<float> didTapCenter;
 	}
 }

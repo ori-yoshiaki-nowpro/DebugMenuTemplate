@@ -435,7 +435,6 @@ namespace DebugMenu
         private void OnPushedPage(DebugPageBase page, bool openPage = false)
         {
             page.Initialize(this);
-
             //前のページ非表示
             if (openPage)
             {
@@ -447,14 +446,13 @@ namespace DebugMenu
                         prevPage.gameObject.SetActive(false);
                     }
                 }
-            }
-            
-            //作ったページ一旦非表示
+            }   
+            //追加したページは一旦非表示に
             page.gameObject.SetActive(false);
-
+            //ページ一覧に追加
             m_pushPageDic.Add(page.PageID, page);
             m_openPageOrderList.Add(page.PageID);
-
+            //追加したページを表示
             if (openPage)
             {
                 OpenPage(page.PageID);
